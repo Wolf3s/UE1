@@ -25,7 +25,7 @@ typedef char* LPSTR;
 #ifdef PLATFORM_WIN32
 #define IPBYTE(A, N) A.S_un.S_un_b.s_b##N
 #else
-#ifdef PLATFORM_PSP
+#ifndef INADDR_NONE
 #define INADDR_NONE 0xffffffff
 #endif
 #define INVALID_SOCKET (-1)
@@ -37,11 +37,19 @@ typedef char* LPSTR;
 #define WSAHOST_NOT_FOUND HOST_NOT_FOUND
 #define WSANO_DATA NO_ADDRESS
 #define closesocket close
-#if defined(PLATFORM_PSVITA) || defined(PLATFORM_PSP)
+#if defined(PLATFORM_PSVITA) || defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 // this is only used for FIONBIO
-#define ioctlsocket( fd, opt, arg ) setsockopt( (fd), SOL_SOCKET, SO_NONBLOCK, (const void*)(arg), sizeof(*(arg)) )
+#define ioctlsocket( fd, opt, arg ) setsockopt( (fd), SOL_SOCKET, O_NONBLOCK, (const void*)(arg), sizeof(*(arg)) )
 #else
 #define ioctlsocket ioctl
+#endif
+#ifdef __PS2__
+/* Structure used to manipulate the SO_LINGER option.  */
+struct linger
+  {
+    int l_onoff;		/* Nonzero to linger on close.  */
+    int l_linger;		/* Time to linger.  */
+  };
 #endif
 #define WSAGetLastError() errno
 #define IPBYTE(A, N) ((BYTE*)&A.s_addr)[N-1]
