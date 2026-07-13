@@ -302,7 +302,7 @@ void UTexture::Serialize( FArchive& Ar )
 		VBits = FLogTwo(VSize);
 	}
 
-#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
+#ifdef PLATFORM_LOW_MEMORY
 	if( BumpMap )
 	{
 		if( BumpMap->Mips.Num() )
@@ -343,6 +343,7 @@ void UTexture::Serialize( FArchive& Ar )
 }
 void UTexture::Export( FOutputDevice& Out, const char* FileType, int Indent )
 {
+#ifndef PLATFORM_LOW_MEMORY
 	guard(UTexture::Export);
 
 	// Set all PCX file header properties.
@@ -398,6 +399,7 @@ void UTexture::Export( FOutputDevice& Out, const char* FileType, int Indent )
 		Out.WriteBinary( &Colors[i].B, 1 );
 	}
 	unguardobj;
+#endif
 }
 void UTexture::PostLoad()
 {
@@ -461,6 +463,7 @@ void UTexture::Init( INT InUSize, INT InVSize )
 
 void UTexture::CreateMips( UBOOL FullMips, UBOOL Downsample )
 {
+#ifndef PLATFORM_LOW_MEMORY
 	guard(UTexture::CreateMips);
 
 	check(Palette!=NULL);
@@ -599,6 +602,7 @@ void UTexture::CreateMips( UBOOL FullMips, UBOOL Downsample )
 		if (TrueDest) delete TrueDest;
 	}
 	unguardobj;
+#endif
 }
 
 

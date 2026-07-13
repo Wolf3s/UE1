@@ -156,9 +156,15 @@ public:
 	///////////////////////////////////
 
 private:
+#ifdef PLATFORM_LOW_MEMORY
+	enum {MAX_MOVING_BRUSH_POLYS=2048};  // Maximum moving brush polys per level.
+	enum {MAX_MOVING_BRUSH_ACTORS=256};  // Maximum moving brush actors per level.
+	enum {MAX_TOUCHING_ACTORS=256};		 // Maximum actors touched by a moving brush during update.
+#else
 	enum {MAX_MOVING_BRUSH_POLYS=6000};  // Maximum moving brush polys per level.
 	enum {MAX_MOVING_BRUSH_ACTORS=512};  // Maximum moving brush actors per level.
 	enum {MAX_TOUCHING_ACTORS=512};		 // Maximum actors touched by a moving brush during update.
+#endif
 
 	ULevel*	Level;
 	FVector FPolyNormal;

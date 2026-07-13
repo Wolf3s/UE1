@@ -325,7 +325,7 @@ void UPS2GsKitViewport::OpenWindow( void* InParentWindow, UBOOL Temporary, INT N
     	GSGlob->Width = NewX;
     	GSGlob->Height = NewY;
 
-		GSTexFormat = GS_PSM_CT32;
+		GSTexFormat = GS_PSM_CT16S;
     	GSGlob->PSM = GSTexFormat;
     	GSGlob->PSMZ = GS_PSMZ_16S;
     	GSGlob->ZBuffering = GS_SETTING_OFF;
@@ -333,14 +333,10 @@ void UPS2GsKitViewport::OpenWindow( void* InParentWindow, UBOOL Temporary, INT N
     	GSGlob->PrimAlphaEnable = GS_SETTING_ON;
     	GSGlob->Dithering = GS_SETTING_OFF;
 
-    	gsKit_set_primalpha(GSGlob, GS_SETREG_ALPHA(0, 1, 0, 1, 0), 0);
-
     	dmaKit_init(D_CTRL_RELE_OFF, D_CTRL_MFD_OFF, D_CTRL_STS_UNSPEC, D_CTRL_STD_OFF, D_CTRL_RCYC_8, 1 << DMA_CHANNEL_GIF);
     	dmaKit_chan_init(DMA_CHANNEL_GIF);
 
     	gsKit_set_clamp(GSGlob, GS_CMODE_REPEAT);
-
-    	gsKit_vram_clear(GSGlob);
 
     	gsKit_init_screen(GSGlob);
 
@@ -358,33 +354,18 @@ void UPS2GsKitViewport::OpenWindow( void* InParentWindow, UBOOL Temporary, INT N
 
 		GSTex->Width  = NewX;
 		GSTex->Height = NewY;
-		GSTex->PSM    = GS_PSM_CT32;
+		GSTex->PSM    = GSTexFormat;
 		GSTex->ClutPSM = 0;
 		GSTex->Filter = GS_FILTER_NEAREST;
 		GSTex->Delayed = 0;
         GSTex->Vram     = 0;
         GSTex->VramClut = 0;
-		GSTex->Mem = (u32*)memalign(128, gsKit_texture_size_ee(
-    		GSTex->Width,
-    		GSTex->Height,
-    		GSTex->Height * ColorBytes));
+		GSTex->Mem = (u32*)memalign(128, gsKit_texture_size_ee(GSTex->Width, GSTex->Height, GSTex->Height * ColorBytes));
 
 		check(GSTex->Mem);
 
-
-		ColorBytes = 4;
+		ColorBytes = 2;
 		Caps = CC_RGB565;
-	
-		SDL_ShowWindow( hWnd );
-
-		// Get this window's display parameters.
-		SDL_DisplayMode DisplayMode;
-		DisplayIndex = SDL_GetWindowDisplayIndex( hWnd );
-		if( SDL_GetWindowDisplayMode( hWnd, &DisplayMode ) == 0 )
-		{
-			DisplaySize.w = DisplayMode.w;
-			DisplaySize.h = DisplayMode.h;
-		}
 	}
 
 	SizeX = NewX;
@@ -420,11 +401,12 @@ void UPS2GsKitViewport::CloseWindow()
 	{
 		if( GSTex )
 		{
-		//	SDL_DestroyTexture( SDLTex );
+			free(GSTex);
 			GSTex = NULL;
 		}
 		if( GSGlob )
 		{
+			free(GSGlob);
 			GSGlob = NULL;
 		}
 		SDL_DestroyWindow( hWnd );
@@ -463,7 +445,7 @@ UBOOL UPS2GsKitViewport::Lock( FPlane FlashScale, FPlane FlashFog, FPlane Screen
 		Stride = SizeX;
     	
 		ScreenPointer = (BYTE*)GSTex->Mem;
-    	Stride = GSTex->Width * sizeof(INT);
+    	Stride = GSTex->Width * sizeof(SWORD);
 
 		debugf(NAME_Log,
     	"Base=%p",
@@ -480,6 +462,25 @@ UBOOL UPS2GsKitViewport::Lock( FPlane FlashScale, FPlane FlashFog, FPlane Screen
 	return UViewport::Lock( FlashScale, FlashFog, ScreenClear, RenderLockFlags, HitData, HitSize );
 
 	unguard;
+}
+
+void ConvertRGB565(BYTE* Buffer, INT Pixels)
+{
+    unsigned short* Pixel = (unsigned short*)Buffer;
+
+    for(INT i = 0; i < Pixels; i++)
+    {
+        unsigned short c = Pixel[i];
+
+        unsigned short r = (c >> 11) & 0x1F;
+        unsigned short g = (c >> 5)  & 0x3F;
+        unsigned short b = c & 0x1F;
+
+        Pixel[i] =
+            (b << 11) |
+            (g << 5) |
+            r;
+    }
 }
 
 //
@@ -500,6 +501,11 @@ void UPS2GsKitViewport::Unlock( UBOOL Blit )
 	{
  		if( GSGlob && GSTex )
 		{
+ConvertRGB565(
+    (BYTE*)GSTex->Mem,
+    SizeX * SizeY
+);
+		
   		gsKit_texture_upload(GSGlob, GSTex);
   		gsKit_prim_sprite_texture(
     		GSGlob,

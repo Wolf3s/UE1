@@ -6,6 +6,10 @@
 		* Created by Tim Sweeney
 =============================================================================*/
 
+#ifdef PLATFORM_LOW_MEMORY
+#include <math.h>
+#endif
+
 /*-----------------------------------------------------------------------------
 	Defintions.
 -----------------------------------------------------------------------------*/
@@ -859,6 +863,28 @@ public:
 	const FCoords	ViewCoords;
 
 	// Basic math functions.
+#if defined(PLATFORM_LOW_MEMORY)
+	FLOAT Sqrt( int i )
+	{
+		return sqrtf( (FLOAT)i / 16384.f );
+	}
+	FLOAT SinTab( int i )
+	{
+		return sinf( ((i>>ANGLE_SHIFT)&(NUM_ANGLES-1)) * 2.f * (FLOAT)PI / (FLOAT)NUM_ANGLES );
+	}
+	FLOAT CosTab( int i )
+	{
+		return cosf( ((i>>ANGLE_SHIFT)&(NUM_ANGLES-1)) * 2.f * (FLOAT)PI / (FLOAT)NUM_ANGLES );
+	}
+	FLOAT SinFloat( FLOAT F )
+	{
+		return sinf( F );
+	}
+	FLOAT CosFloat( FLOAT F )
+	{
+		return cosf( F );
+	}
+#else
 	FLOAT Sqrt( int i )
 	{
 		return SqrtFLOAT[i]; 
@@ -879,15 +905,18 @@ public:
 	{
 		return CosTab((F*65536)/(2.0*PI));
 	}
+#endif
 
 	// Constructor.
 	FGlobalMath();
 
+#ifndef PLATFORM_LOW_MEMORY
 private:
 	// Tables.
 	FLOAT  TrigFLOAT		[NUM_ANGLES];
 	FLOAT  SqrtFLOAT		[NUM_SQRTS];
 	FLOAT  LightSqrtFLOAT	[NUM_SQRTS];
+#endif
 };
 
 inline INT ReduceAngle( INT Angle )

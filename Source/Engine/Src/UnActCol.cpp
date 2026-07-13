@@ -35,7 +35,11 @@ public:
 	void CheckActorNotReferenced( AActor* Actor );
 
 	// Constants.
+#ifdef PLATFORM_LOW_MEMORY
+	enum { NUM_BUCKETS = 8192              };
+#else
 	enum { NUM_BUCKETS = 16384             };
+#endif
 	enum { BASIS_BITS  = 8                 };
 	enum { BASIS_MASK  = (1<<BASIS_BITS)-1 };
 	enum { GRAN_XY     = 256               };

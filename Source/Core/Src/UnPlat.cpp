@@ -57,6 +57,12 @@
 #define MAX_COMPUTERNAME_LENGTH 256
 #endif
 
+#ifdef PLATFORM_LOW_MEMORY
+#define GMEM_CHUNK_SIZE 32768
+#else
+#define GMEM_CHUNK_SIZE 65536
+#endif
+
 CORE_API FGlobalPlatform GTempPlatform;
 INT GSlowTaskCount=0;
 FILE* GLogFile=NULL;
@@ -172,8 +178,8 @@ UBOOL FGlobalPlatform::Exec( const char* Cmd, FOutputDevice* Out )
 			Out->Log("Eating up all available memory");
 			while( 1 )
 			{
-				void* Eat = appMalloc(65536,"EatMem");
-				memset( Eat, 0, 65536 );
+				void* Eat = appMalloc(GMEM_CHUNK_SIZE,"EatMem");
+				memset( Eat, 0, GMEM_CHUNK_SIZE );
 			}
 			return 1;
 		}
@@ -416,7 +422,7 @@ void appInit()
 
 	// Core initialization.
 	GObj.Init();
-	GMem.Init( 65536 );
+	GMem.Init( GMEM_CHUNK_SIZE );
 	GSys = new USystem;
 	GObj.AddToRoot( GSys );
 	for( INT i=0; i<ARRAY_COUNT(GSys->Suppress); i++ )

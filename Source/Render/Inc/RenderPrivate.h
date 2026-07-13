@@ -367,6 +367,10 @@ inline FLOAT SqrtApprox   (FLOAT F)
 	}
 	return F;								// compiles to fld [F].
 }
+#elif defined(PLATFORM_LOW_MEMORY)
+inline FLOAT DivSqrtApprox(FLOAT F) {return 1.f / sqrtf(F);}
+inline FLOAT DivApprox    (FLOAT F) {return 1.f / F;}
+inline FLOAT SqrtApprox   (FLOAT F) {return sqrtf(F);}
 #elif defined(PLATFORM_PSP)
 inline FLOAT DivSqrtApprox(FLOAT F) {return 1.0f/__builtin_allegrex_sqrt_s(F);}
 inline FLOAT DivApprox    (FLOAT F) {return 1.0f/F;}
