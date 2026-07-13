@@ -106,7 +106,7 @@ void UGameEngine::Init()
 		if( !LoadMap( FURL("Entry"), NULL, Error256 ) )
 			appErrorf( LocalizeError("LoadEntry"), Error256 );
 		Exchange( GLevel, GEntry );
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 		// Purge unused objects and flush caches.
 		Flush();
 		GObj.CollectGarbage( GSystem, RF_Intrinsic );
@@ -542,7 +542,7 @@ ULevel* UGameEngine::LoadMap( const FURL& URL, UPendingLevel* Pending, char* Err
 			GObj.SavePackage( GLevel->GetParent(), GLevel, 0, Filename );
 		}
 		GLevel = NULL;
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 		// Purge unused objects and flush caches.
 		guard(CleanupAfterExit);
 		Flush();

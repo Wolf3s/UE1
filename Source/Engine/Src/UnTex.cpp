@@ -289,7 +289,7 @@ void UTexture::Serialize( FArchive& Ar )
 	&&	Client 
 	&&	Client->LowDetailTextures
 	&&	Mips.Num()>1
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 	&&	( USize > 16 && VSize > 16 )
 #endif
 	)
@@ -302,7 +302,7 @@ void UTexture::Serialize( FArchive& Ar )
 		VBits = FLogTwo(VSize);
 	}
 
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 	if( BumpMap )
 	{
 		if( BumpMap->Mips.Num() )

@@ -1571,7 +1571,7 @@ CORE_API const char* appBaseDir()
 			if (BaseDir[i - 1] == '\\' || BaseDir[i - 1] == '/')
 				break;
 		BaseDir[i] = 0;
-#elif defined(PLATFORM_PSVITA) || defined(PLATFORM_PSP)
+#elif defined(PLATFORM_PSVITA) || defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 		if ( getcwd( BaseDir, sizeof(BaseDir) ) )
 			appStrncat( BaseDir, "/", sizeof(BaseDir) - 1 );
 #elif defined(PLATFORM_SDL)

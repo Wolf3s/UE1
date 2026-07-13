@@ -27,8 +27,11 @@ target_include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/Src
 )
 
-if(USE_SDL)
+if(BUILD_NSDLDrv AND NOT PS2)
   target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} NSDLDrv)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
+elseif(PS2)
+  target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} PS2GsKitDrv)
   target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
 elseif(TARGET_IS_WINDOWS)
   target_link_libraries(${PROJECT_NAME} Window)
@@ -75,6 +78,26 @@ if(VITA)
     SceVshBridge_stub
     SceSblSsMgr_stub
     SceKernelDmacMgr_stub
+  )
+elseif(PS2)
+  target_link_libraries(${PROJECT_NAME}
+    atomic
+    pthread
+    pthreadglue
+    SDL2_mixer
+    fluidsynth
+    opusfile
+    opus
+    vorbisfile
+    vorbisenc
+    vorbis
+    ogg
+    FLAC
+    sndfile
+    modplug
+    xmp
+    z
+    mpg123
   )
 endif()
 

@@ -129,7 +129,7 @@ typedef int16_t  SWORD;  // 16-bit signed.
 typedef int64_t  SQWORD; // 64-bit signed.
 
 // Other base types.
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 typedef int      UBOOL;  // Boolean 0 (false) or 1 (true).
 #else
 typedef int32_t  UBOOL;  // Boolean 0 (false) or 1 (true).
@@ -141,7 +141,7 @@ typedef double   DOUBLE; // 64-bit IEEE double.
 typedef uint8_t  BYTE;   // 8-bit  unsigned.
 typedef uint32_t DWORD;  // 32-bit unsigned.
 // Signed base types.
-#ifdef PLATFORM_PSP
+#if defined(PLATFORM_PSP) || defined(PLATFORM_PS2)
 typedef int      INT;    // 32-bit signed.
 #else
 typedef int32_t  INT;    // 32-bit signed.

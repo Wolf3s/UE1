@@ -330,6 +330,7 @@ UBOOL UTcpNetDriver::Init( UBOOL Connect, FNetworkNotify* InNotify, FURL& URL, c
 	if( !InitSockets(Error256) )
 		return 0;
 
+#ifndef PLATFORM_PS2
 	// Get this host name.
 	if( gethostname( HostName, 256 ) )
 	{
@@ -337,6 +338,7 @@ UBOOL UTcpNetDriver::Init( UBOOL Connect, FNetworkNotify* InNotify, FURL& URL, c
 		return 0;
 	}
     debugf( NAME_Init, "WinSock gethostname: %s", HostName );
+#endif
 	char Home[256];
 	if( Parse(appCmdLine(),"MULTIHOME=",Home,ARRAY_COUNT(Home)) )
 	{

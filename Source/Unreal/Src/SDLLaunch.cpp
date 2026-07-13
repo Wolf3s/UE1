@@ -12,6 +12,10 @@
 #include <sys/stat.h>
 #include <psppower.h>
 #endif
+#ifdef PLATFORM_PS2
+#include <unistd.h>
+#include <sys/stat.h>
+#endif
 
 #include "Engine.h"
 
@@ -156,7 +160,17 @@ void PlatformPreInit()
 	scePowerSetCpuClockFrequency( 333 );
 	scePowerSetBusClockFrequency( 167 );
 }
+#elif defined(PLATFORM_PS2)
+void PlatformPreInit()
+{
+	// chdir into System if we're not in there
+	struct stat st;
+	if( stat( "./System", &st ) == 0 )
+	{
+		chdir( "./System" );
+	}
 
+}
 #else
 
 void PlatformPreInit()

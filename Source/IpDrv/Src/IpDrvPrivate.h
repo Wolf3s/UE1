@@ -16,7 +16,7 @@ Revision history:
 #else
 #include <unistd.h>
 #include <arpa/inet.h>
-#if !defined(PLATFORM_PSVITA) && !defined(PLATFORM_PSP)
+#if !defined(PLATFORM_PSVITA) && !defined(PLATFORM_PSP) && !defined(PLATFORM_PS2)
 #include <net/if.h>
 #include <sys/ioctl.h>
 #endif

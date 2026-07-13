@@ -2,5 +2,6 @@ Intermediate
 Lib
 Bin
 *.log
+Source/build
 Source/.vs
 Source/UnrealED/obj

@@ -4,8 +4,12 @@ set(SRC_FILES "SDLMixerDrv.cpp")
 
 add_library(${PROJECT_NAME} ${LIB_TYPE} ${SRC_FILES})
 
+if(PS2)
+find_package(SDL2_mixer CONFIG REQUIRED)
+else()
 include(FindPkgConfig)
 pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
+endif()
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
